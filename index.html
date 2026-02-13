@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NovaCoin Clicker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="top-bar">
+    <div>
+        <h1 class="game-title">🚀 NovaCoin</h1>
+        <div class="balance-box">
+            <span class="balance-label">Balance</span>
+            <span id="coinBalance" class="balance-amount">0 NC</span>
+        </div>
+    </div>
+
+    <div class="ticker">
+        <span>NovaCoin Price: $0.0042 ▲ 3.2% | Market Cap: $12.4M | Volume: $842K</span>
+    </div>
+</header>
+
+<main class="game-container">
+
+    <!-- Coin Section -->
+    <section class="click-section">
+        <button id="coinButton" class="coin-button">NC</button>
+        <p class="click-hint">Tap to mine NovaCoins</p>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-card">
+        <h2>📊 Stats</h2>
+        <div class="stat-row">
+            <span>Per Tap</span>
+            <span id="coinsPerClick">1</span>
+        </div>
+        <div class="stat-row">
+            <span>Auto Miners</span>
+            <span id="autoMiners">0</span>
+        </div>
+        <div class="stat-row">
+            <span>Total Mined</span>
+            <span id="totalMined">0</span>
+        </div>
+    </section>
+
+    <!-- Shop -->
+    <section class="shop-card">
+        <h2>🛒 Upgrades</h2>
+
+        <div class="upgrade-item">
+            <div>
+                <h3>Click Boost</h3>
+                <p>Increase coins per tap</p>
+            </div>
+            <button id="upgradeButton1" value="0" class="buy-btn">50 NC</button>
+        </div>
+
+        <div class="upgrade-item">
+            <div>
+                <h3>Auto Miner</h3>
+                <p>Generates coins automatically</p>
+            </div>
+            <button id="upgradeButton2" value="1" class="buy-btn">100 NC</button>
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="bottom-nav">
+    <div class="nav-item">
+        <span>⛏</span>
+        Mine
+    </div>
+    <div class="nav-item">
+        <span>🛒</span>
+        Shop
+    </div>
+    <div class="nav-item">
+        <span>👤</span>
+        Profile
+    </div>
+</footer>
+<script src="novaCoin.js"></script>
+</body>
+</html>
