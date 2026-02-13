@@ -25,7 +25,7 @@ if (localStorage.length === 0){
     ];
 } else {
     var gameStats = JSON.parse(localStorage.getItem("novaCoinSave"));
-    var gameStats = JSON.parse(localStorage.getItem("upgradeSave"));
+    var upgrades = JSON.parse(localStorage.getItem("upgradeSave"));
 }
 
 const balanceEl = document.getElementById("coinBalance");
@@ -75,4 +75,5 @@ function saveGame() {
 }
 
 render();
+
 setInterval(saveGame, 5000);
