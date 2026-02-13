@@ -80,11 +80,14 @@ body {
     max-width: 80vw;
     border-radius: 50%;
     border: none;
-    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.7);
     font-size: 40px;
     font-weight: bold;
     color: #222;
+    background-image: url("images/novaCoin.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
     cursor: pointer;
     animation: pulse 2s infinite;
     transition: transform 0.1s ease;
@@ -96,7 +99,7 @@ body {
 
 @keyframes pulse {
     0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
-    50% { box-shadow: 0 0 60px rgba(255, 215, 0, 1); }
+    50% { box-shadow: 0 0 30px rgba(255, 215, 0, 1); }
     100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
 }
 

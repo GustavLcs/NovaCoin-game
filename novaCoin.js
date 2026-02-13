@@ -6,7 +6,7 @@ const coinButton = document.getElementById("coinButton");
 const upgradeButton1 = document.getElementById("upgradeButton1");
 const upgradeButton2 = document.getElementById("upgradeButton2");
 const coinAudio = new Audio("SFX/coin-click.mp3");
-coinAudio.volume = 0.2;
+coinAudio.volume = 0.3;
 
 if (localStorage.length === 0){ 
     var gameStats = {
@@ -23,14 +23,12 @@ if (localStorage.length === 0){
         name: "Click Boost",
         cost: 50,
         level: 0,
-        apply: (state) => state.coinsPerClick += 1
     },
     {
         id: "autoMiner",
         name: "Auto Miner",
         cost: 100,
         level: 0,
-        apply: (state) => state.autoMiners += 1
     }
     ];
 
@@ -50,19 +48,31 @@ function render() {
 }
 
 function handleUpgrade(index) {
-    const upgrade = upgrades[index];
+    let upgrade = upgrades[index];
     
     if (gameStats.novaCoinsBalance >= upgrade.cost) {
         gameStats.novaCoinsBalance -= upgrade.cost;
+
         let newCost = upgrade.cost = Math.floor(upgrade.cost * 1.32);
         upgrade.level += 1;
-        upgrade.apply(gameStats)
+        upgradeStats(upgrade);
 
         const upgradeButton = document.querySelector(`[value="${index}"]`);
-        upgradeButton.textContent = `${newCost} NC`
-        render()
+        upgradeButton.textContent = `${newCost} NC`;
+        render();
     }
+}
 
+function upgradeStats(upgrade) {
+    switch (upgrade.id) {
+        case "clickBoost":
+            gameStats.coinsPerClick += 1;
+            return;
+            
+        case "autoMiner":
+            gameStats.autoMiners += 1;
+            return;
+    }
 }
 
 function mineCoins() {
@@ -75,8 +85,30 @@ function mineCoins() {
 }
 
 function saveGame() {
-    localStorage.setItem("novaCoinSave", JSON.stringify(gameStats));
-    localStorage.setItem("upgradeSave", JSON.stringify(upgrades)); 
+    try {
+        if (typeof upgrades[0].apply == "function") {
+            var newUpgrades = {
+                id: "clickBoost",
+                name: "Click Boost",
+                cost: upgrades[0].cost,
+                level: upgrades[0].level
+            }
+        }
+        if (typeof upgrades[1].apply == "function") {
+            var newUpgrades = {
+                id: "clickBoost",
+                name: "Click Boost",
+                cost: upgrades[1].cost,
+                level: upgrades[1].level
+            }
+        }
+
+        localStorage.setItem("novaCoinSave", JSON.stringify(gameStats));
+        localStorage.setItem("upgradeSave", JSON.stringify(newUpgrades));         
+    } catch {
+        localStorage.setItem("novaCoinSave", JSON.stringify(gameStats));
+        localStorage.setItem("upgradeSave", JSON.stringify(upgrades)); 
+    }
 }
 
 
