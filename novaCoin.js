@@ -1,3 +1,13 @@
+const balanceEl = document.getElementById("coinBalance");
+const perClickEl = document.getElementById("coinsPerClick");
+const minersEl = document.getElementById("autoMiners");
+const totalEl = document.getElementById("totalMined");
+const coinButton = document.getElementById("coinButton");
+const upgradeButton1 = document.getElementById("upgradeButton1");
+const upgradeButton2 = document.getElementById("upgradeButton2");
+const coinAudio = new Audio("SFX/coin-click.mp3");
+coinAudio.volume = 0.2;
+
 if (localStorage.length === 0){ 
     var gameStats = {
         novaCoinsBalance: 0,
@@ -23,22 +33,12 @@ if (localStorage.length === 0){
         apply: (state) => state.autoMiners += 1
     }
     ];
+
 } else {
     var gameStats = JSON.parse(localStorage.getItem("novaCoinSave"));
     var upgrades = JSON.parse(localStorage.getItem("upgradeSave"));
 }
 
-const balanceEl = document.getElementById("coinBalance");
-const perClickEl = document.getElementById("coinsPerClick");
-const minersEl = document.getElementById("autoMiners");
-const totalEl = document.getElementById("totalMined");
-const coinButton = document.getElementById("coinButton");
-const upgradeButton1 = document.getElementById("upgradeButton1");
-const upgradeButton2 = document.getElementById("upgradeButton2");
-
-coinButton.addEventListener("click", mineCoins);
-upgradeButton1.addEventListener("click", () => handleUpgrade(upgradeButton1.value));
-upgradeButton2.addEventListener("click", () => handleUpgrade(upgradeButton2.value));
 
 function render() {
     balanceEl.textContent = gameStats.novaCoinsBalance + " NC";
@@ -50,23 +50,28 @@ function render() {
 }
 
 function handleUpgrade(index) {
-    if (gameStats.novaCoinsBalance >= upgrades[index].cost) {
-        gameStats.novaCoinsBalance -= upgrades[index].cost;
-
-        let newCost = upgrades[index].cost = Math.floor(upgrades[index].cost * 1.32);
-        upgrades[index].level += 1;
-        upgrades[index].apply(gameStats);
+    const upgrade = upgrades[index];
+    
+    if (gameStats.novaCoinsBalance >= upgrade.cost) {
+        gameStats.novaCoinsBalance -= upgrade.cost;
+        let newCost = upgrade.cost = Math.floor(upgrade.cost * 1.32);
+        upgrade.level += 1;
+        upgrade.apply(gameStats)
 
         const upgradeButton = document.querySelector(`[value="${index}"]`);
         upgradeButton.textContent = `${newCost} NC`
         render()
     }
+
 }
 
 function mineCoins() {
     gameStats.novaCoinsBalance += gameStats.coinsPerClick;
     gameStats.totalMined += gameStats.coinsPerClick;
     render();
+
+    coinAudio.currentTime = 0;
+    coinAudio.play();
 }
 
 function saveGame() {
@@ -74,6 +79,10 @@ function saveGame() {
     localStorage.setItem("upgradeSave", JSON.stringify(upgrades)); 
 }
 
-render();
 
+render();
 setInterval(saveGame, 5000);
+
+coinButton.addEventListener("click", mineCoins);
+upgradeButton1.addEventListener("click", () => handleUpgrade(upgradeButton1.value));
+upgradeButton2.addEventListener("click", () => handleUpgrade(upgradeButton2.value));
