@@ -117,7 +117,6 @@ function renderBalance() {
 }
 
 // Get Elements 
-localStorage.clear()
 const balanceEl = document.getElementById("coinBalance");
 const perClickEl = document.getElementById("coinsPerClick");
 const minersEl = document.getElementById("autoMiners");
