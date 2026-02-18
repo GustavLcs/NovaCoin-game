@@ -11,7 +11,7 @@
 
 <header class="top-bar">
     <div>
-        <h1 class="game-title">🚀 NovaCoin</h1>
+        <h1 class="game-title">NovaCoin Clicker ⛏</h1>
         <div class="balance-box">
             <span class="balance-label">Balance</span>
             <span id="coinBalance" class="balance-amount">0 NC</span>
@@ -29,27 +29,6 @@
     <section class="click-section">
         <button id="coinButton" class="coin-button"></button>
         <p class="click-hint">Tap to mine NovaCoins</p>
-    </section>
-
-    <!-- Stats -->
-    <section class="stats-card">
-        <h2>📊 Stats</h2>
-        <div class="stat-row">
-            <span>Coins Per Tap</span>
-            <span id="coinsPerClick">1</span>
-        </div>
-        <div class="stat-row">
-            <span>Auto Miners</span>
-            <span id="autoMiners">0</span>
-        </div>
-        <div class="stat-row">
-            <span>Total Clicks</span>
-            <span id="totalClicks">0</span>
-        </div>
-        <div class="stat-row">
-            <span>Total Mined</span>
-            <span id="totalMined">0</span>
-        </div>
     </section>
 
     <!-- Shop -->
@@ -73,23 +52,46 @@
         </div>
 
     </section>
+    
+    <!-- Stats -->
+    <section class="stats-card">
+        <h2>📊 Stats <button id="statsButton">⏷</button> </h2>
+        <div id="statsTable">
+            <div class="stat-row">
+                <span>Coins Per Tap</span>
+                <span id="coinsPerClick">1</span>
+            </div>
+            <div class="stat-row">
+                <span>Auto Miners</span>
+                <span id="autoMiners">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Total Clicks</span>
+                <span id="totalClicks">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Total Mined</span>
+                <span id="totalMined">0</span>
+            </div>
+        </div>
+    </section>
+
 
 </main>
 
 <footer class="bottom-nav">
-    <div class="nav-item">
-        <span>⛏</span>
-        Mine
-    </div>
-    <div class="nav-item">
-        <span>🛒</span>
-        Shop
-    </div>
-    <div class="nav-item">
-        <span>👤</span>
-        Profile
+    <div class="nav-container">
+        <button class="nav-item">
+            <span>🛒</span>
+            Shop
+        </button>
+        <button class="nav-item">
+            <span>🪽</span>
+            Rebirth
+        </button>
     </div>
 </footer>
+
 <script src="novaCoin.js"></script>
 </body>
 </html>
