@@ -21,8 +21,27 @@ const closeShopBtn = document.getElementById("closeShopBtn");
 const overlay = document.getElementById("overlay");
 
 // Audio
-const coinAudio = new Audio("SFX/coin-click.mp3");
-coinAudio.volume = 0.3;
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let coinBuffer = null;
+
+async function loadCoinSound() { 
+    try {
+        const response = await fetch("SFX/coin-click.mp3");
+        const arrayBuffer = await response.arrayBuffer();
+        coinBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    } catch (err) {
+        console.error("Failed to load coin sound:", err);
+    }
+}
+
+loadCoinSound(); // Load coin sound at startup
+
+// Unlock audio on user interaction
+document.addEventListener("click", () => {
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+}, { once: true });
 
 
 /* =========================
@@ -32,7 +51,7 @@ coinAudio.volume = 0.3;
 const SAVE_KEY = "novaCoinSave";
 
 const defaultSave = {
-    version: 1,
+    version: 2,
 
     gameStats: {
         novaCoinsBalance: 0,
@@ -69,28 +88,28 @@ const GameData = {
             price: 1795,
             requirement: 1000,
             description: "Doubles click income",
-            effect: (save) => save.gameStats.clicksMultiplier *= 3
+            effect: (save) => save.gameStats.clicksMultiplier *= 2
         },
         goldenMiner: {
             displayName: "Golden Miner",
             price: 3450,
             requirement: 1000,
             description: "Doubles miner income",
-            effect: (save) => save.gameStats.autoMinerMultiplier *= 4
+            effect: (save) => save.gameStats.autoMinerMultiplier *= 2
         },
         diamondClicks: {
             displayName: "Diamond Clicks",
             price: 12300,
             requirement: 20000,
             description: "Massively boosts click income",
-            effect: (save) => save.gameStats.clicksMultiplier *= 5
+            effect: (save) => save.gameStats.clicksMultiplier *= 3
         },
         diamondMiner: {
             displayName: "Diamond Miner",
             price: 23500,
             requirement: 20000,
             description: "Massively boosts miner income",
-            effect: (save) => save.gameStats.autoMinerMultiplier *= 5
+            effect: (save) => save.gameStats.autoMinerMultiplier *= 3
         },
         comboClicks: {
             displayName: "Combo Clicks",
@@ -98,8 +117,8 @@ const GameData = {
             requirement: 100000,
             description: "Clicking boosts miners too",
             effect: (save) => {
-                save.gameStats.clicksMultiplier *= 4;
-                save.gameStats.autoMinerMultiplier *= 4;
+                save.gameStats.clicksMultiplier *= 2;
+                save.gameStats.autoMinerMultiplier *= 2;
             }
         },
         lightningMiner: {
@@ -177,6 +196,8 @@ const entities = saveData.entities;
 const items = saveData.items;
 const itemsDefinitions = GameData.items;
 
+recalculateMultipliers();
+
 
 /* =========================
    RENDER FUNCTIONS
@@ -184,7 +205,7 @@ const itemsDefinitions = GameData.items;
 
 function render() {
     balanceEl.textContent = gameStats.novaCoinsBalance + " NC";
-    perClickEl.textContent = gameStats.coinsPerClick;
+    perClickEl.textContent = gameStats.coinsPerClick * gameStats.clicksMultiplier;
     minersEl.textContent = entities.autoMiner.amount;
     totalMinedEl.textContent = gameStats.totalMined;
     totalClicksEl.textContent = gameStats.totalClicks;
@@ -214,8 +235,8 @@ function renderShop() {
         }
     }
 
-    if (shopItemsListEl.innerHTML === "") {
-        createItemCard();
+    if (!shopItemsListEl.children.length) {
+        createEmptyShopMessage();
     }
 
     updateShopButtonsState();
@@ -223,32 +244,34 @@ function renderShop() {
 
 function createItemCard(definition, key) {
     const itemEl = document.createElement("div");
-    itemEl.classList.add("item-description", "shop-item");
+    itemEl.className = "item-description shop-item";
 
     const title = document.createElement("h4");
-    const desc = document.createElement("p");
-
-    if (!definition) {
-        title.textContent = "No upgrades available";
-        desc.textContent = "Keep playing to unlock more!";
-        itemEl.appendChild(title);
-        itemEl.appendChild(desc);
-        shopItemsListEl.appendChild(itemEl);
-        return;
-    }
-
     title.textContent = definition.displayName;
+
+    const desc = document.createElement("p");
     desc.textContent = definition.description;
 
     const button = document.createElement("button");
-    button.textContent = definition.price + " NC";
+    button.textContent = `${definition.price} NC`;
     button.dataset.itemKey = key;
-    button.classList.add("shop-purchase-btn");
+    button.className = "shop-purchase-btn";
 
-    itemEl.appendChild(title);
-    itemEl.appendChild(desc);
-    itemEl.appendChild(button);
+    itemEl.append(title, desc, button);
+    shopItemsListEl.appendChild(itemEl);
+}
 
+function createEmptyShopMessage() {
+    const itemEl = document.createElement("div");
+    itemEl.className = "item-description shop-item";
+
+    const title = document.createElement("h4");
+    title.textContent = "No upgrades available";
+
+    const desc = document.createElement("p");
+    desc.textContent = "Keep playing to unlock more!";
+
+    itemEl.append(title, desc);
     shopItemsListEl.appendChild(itemEl);
 }
 
@@ -284,7 +307,6 @@ function buyShopItem(key) {
     if (gameStats.novaCoinsBalance < def.price) return;
 
     gameStats.novaCoinsBalance -= def.price;
-    def.effect(saveData);
     item.bought = true;
 
     autoMine();
@@ -299,8 +321,22 @@ function buyShopItem(key) {
 ========================= */
 
 function playCoinSound() {
-    coinAudio.currentTime = 0;
-    coinAudio.play();
+    if (!coinBuffer) return;
+
+    const source = audioContext.createBufferSource();
+    source.buffer = coinBuffer;
+
+    // Pitch variation (+- 3%)
+    source.playbackRate.value = 1 + (Math.random() * 0.06 - 0.03);
+
+    // Volume variation
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.25 + Math.random() * 0.05;
+
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    source.start();
 }
 
 function mineCoins() {
@@ -315,6 +351,19 @@ function mineCoins() {
     requestSave();
 }
 
+function recalculateMultipliers() { // Rebalance purposes
+    gameStats.clicksMultiplier = 1;
+    gameStats.autoMinerMultiplier = 1;
+    entities.autoMiner.speed = 1000;
+
+    for (const key in items) {
+        if (items[key].bought) {
+            const def = itemsDefinitions[key];
+                def.effect(saveData);
+        }
+    }
+}
+
 
 /* =========================
    UPGRADES
@@ -325,7 +374,7 @@ function clickUpgrade() {
 
     if (gameStats.novaCoinsBalance >= upgrade.cost) {
         gameStats.novaCoinsBalance -= upgrade.cost;
-        gameStats.coinsPerClick += gameStats.clicksMultiplier;
+        gameStats.coinsPerClick++;
 
         upgrade.level++;
         upgrade.cost = Math.floor(upgrade.cost * 1.32);
