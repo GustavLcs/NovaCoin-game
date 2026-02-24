@@ -17,7 +17,7 @@ const coinButton = document.getElementById("coinButton");
 const upgradeButton1 = document.getElementById("upgradeButton1");
 const upgradeButton2 = document.getElementById("upgradeButton2");
 const openShopBtn = document.getElementById("openShopBtn");
-const closeShopBtn = document.getElementById("closeShopBtn")
+const closeShopBtn = document.getElementById("closeShopBtn");
 const overlay = document.getElementById("overlay");
 
 // Audio
@@ -66,75 +66,55 @@ const GameData = {
     items: {
         goldenClicks: {
             displayName: "Golden Clicks",
-            price: 7800,
+            price: 1795,
             requirement: 1000,
             description: "Doubles click income",
-            effect: (save) => {
-                save.gameStats.clicksMultiplier *= 2;
-            }
+            effect: (save) => save.gameStats.clicksMultiplier *= 3
         },
-
         goldenMiner: {
             displayName: "Golden Miner",
-            price: 11450,
+            price: 3450,
             requirement: 1000,
             description: "Doubles miner income",
-            effect: (save) => {
-                save.gameStats.autoMinerMultiplier *= 2;
-            }
+            effect: (save) => save.gameStats.autoMinerMultiplier *= 4
         },
-
         diamondClicks: {
             displayName: "Diamond Clicks",
-            price: 52300,
-            requirement: 50000,
+            price: 12300,
+            requirement: 20000,
             description: "Massively boosts click income",
-            effect: (save) => {
-                save.gameStats.clicksMultiplier *= 5;
-            }
+            effect: (save) => save.gameStats.clicksMultiplier *= 5
         },
-
         diamondMiner: {
             displayName: "Diamond Miner",
-            price: 63500,
-            requirement: 50000,
+            price: 23500,
+            requirement: 20000,
             description: "Massively boosts miner income",
-            effect: (save) => {
-                save.gameStats.autoMinerMultiplier *= 5;
-            }
+            effect: (save) => save.gameStats.autoMinerMultiplier *= 5
         },
-
         comboClicks: {
             displayName: "Combo Clicks",
-            price: 354300,
-            requirement: 200000,
+            price: 100300,
+            requirement: 100000,
             description: "Clicking boosts miners too",
             effect: (save) => {
-                save.gameStats.clicksMultiplier *= 3;
-                save.gameStats.autoMinerMultiplier *= 2;
+                save.gameStats.clicksMultiplier *= 4;
+                save.gameStats.autoMinerMultiplier *= 4;
             }
         },
-
         lightningMiner: {
             displayName: "Lightning Miner",
-            price: 512700,
-            requirement: 300000,
+            price: 212700,
+            requirement: 150000,
             description: "Super fast mining",
-            effect: (save) => {
-                save.entities.autoMiner.speed *= 0.5;
-            }
+            effect: (save) => save.entities.autoMiner.speed *= 0.3
         }
     }
-}
+};
 
 function deepMerge(target, source) {
     for (const key in source) {
-
-        if (
-            typeof source[key] === "object" &&
-            source[key] !== null &&
-            !Array.isArray(source[key])
-        ) {
+        if (typeof source[key] === "object" && source[key] !== null && !Array.isArray(source[key])) {
             if (!target[key]) target[key] = {};
             deepMerge(target[key], source[key]);
         } else {
@@ -160,7 +140,6 @@ function loadGame() {
         const parsed = JSON.parse(raw);
         saveData = deepMerge(parsed, structuredClone(defaultSave));
     } catch {
-        console.warn("Save corrupted. Resetting.");
         saveData = structuredClone(defaultSave);
     }
 }
@@ -173,9 +152,7 @@ let saveQueued = false;
 
 function requestSave() {
     if (saveQueued) return;
-
     saveQueued = true;
-
     setTimeout(() => {
         saveGame();
         saveQueued = false;
@@ -184,8 +161,6 @@ function requestSave() {
 
 function hardReset() {
     localStorage.removeItem(SAVE_KEY);
-    saveData = structuredClone(defaultSave);
-    saveGame();
     location.reload();
 }
 
@@ -216,6 +191,8 @@ function render() {
 
     upgradeButton1.textContent = upgrades.clickBoost.cost + " NC";
     upgradeButton2.textContent = upgrades.autoMiner.cost + " NC";
+
+    updateShopButtonsState();
 }
 
 function renderBalance() {
@@ -227,50 +204,95 @@ function renderShop() {
     shopItemsListEl.innerHTML = "";
 
     for (const key in itemsDefinitions) {
-        const itemDefinition = itemsDefinitions[key];
+        const def = itemsDefinitions[key];
         const item = items[key];
 
-        const available = gameStats.totalMined >= itemDefinition.requirement;
+        const available = gameStats.totalMined >= def.requirement;
+
         if (!item.bought && available) {
-            if (shopItemsListEl.childElementCount < 7)
-                createItemCard(itemDefinition);
+            createItemCard(def, key);
         }
     }
 
     if (shopItemsListEl.innerHTML === "") {
-        createItemCard(); //default message
+        createItemCard();
     }
+
+    updateShopButtonsState();
 }
 
-function createItemCard(itemDefinition) { // Refactor later!
+function createItemCard(definition, key) {
     const itemEl = document.createElement("div");
-    const itemTitleEl = document.createElement("h4");
-    const itemDescriptionEl = document.createElement("p");
-    const purchaseBtn = document.createElement("button");
-    let itemTitle, itemDescription, itemPrice;
+    itemEl.classList.add("item-description", "shop-item");
 
-    let hasItem = itemDefinition !== undefined;
-    if (hasItem) {
-        itemTitle = itemDefinition.displayName;
-        itemDescription = itemDefinition.description;
-        itemPrice = itemDefinition.price;
-    } else {
-        itemTitle = "Oops";
-        itemDescription = "You already have the best devices. Keep playing to unlock more upgrades";
+    const title = document.createElement("h4");
+    const desc = document.createElement("p");
+
+    if (!definition) {
+        title.textContent = "No upgrades available";
+        desc.textContent = "Keep playing to unlock more!";
+        itemEl.appendChild(title);
+        itemEl.appendChild(desc);
+        shopItemsListEl.appendChild(itemEl);
+        return;
     }
 
-    itemTitleEl.textContent = itemTitle;
-    itemDescriptionEl.textContent = itemDescription;
-    purchaseBtn.textContent = itemPrice + " NC";
+    title.textContent = definition.displayName;
+    desc.textContent = definition.description;
 
-    itemEl.classList.add("item-description")
-    itemEl.appendChild(itemTitleEl);
-    itemEl.appendChild(itemDescriptionEl);
-    if (hasItem) itemEl.appendChild(purchaseBtn);
-    itemEl.classList.add("shop-item");
+    const button = document.createElement("button");
+    button.textContent = definition.price + " NC";
+    button.dataset.itemKey = key;
+    button.classList.add("shop-purchase-btn");
+
+    itemEl.appendChild(title);
+    itemEl.appendChild(desc);
+    itemEl.appendChild(button);
 
     shopItemsListEl.appendChild(itemEl);
 }
+
+function updateShopButtonsState() {
+    const buttons = shopItemsListEl.querySelectorAll(".shop-purchase-btn");
+
+    buttons.forEach(btn => {
+        const key = btn.dataset.itemKey;
+        const price = itemsDefinitions[key].price;
+
+        btn.disabled = gameStats.novaCoinsBalance < price;
+    });
+}
+
+
+/* =========================
+   SHOP EVENT DELEGATION
+========================= */
+
+shopItemsListEl.addEventListener("click", (event) => {
+    const button = event.target.closest(".shop-purchase-btn");
+    if (!button) return;
+
+    const key = button.dataset.itemKey;
+    buyShopItem(key);
+});
+
+function buyShopItem(key) {
+    const def = itemsDefinitions[key];
+    const item = items[key];
+
+    if (!def || item.bought) return;
+    if (gameStats.novaCoinsBalance < def.price) return;
+
+    gameStats.novaCoinsBalance -= def.price;
+    def.effect(saveData);
+    item.bought = true;
+
+    autoMine();
+    render();
+    renderShop();
+    requestSave();
+}
+
 
 /* =========================
    GAME LOGIC
@@ -282,25 +304,15 @@ function playCoinSound() {
 }
 
 function mineCoins() {
-    gameStats.novaCoinsBalance += gameStats.coinsPerClick;
-    gameStats.totalMined += gameStats.coinsPerClick;
-    gameStats.totalClicks += 1;
+    const amount = gameStats.coinsPerClick * gameStats.clicksMultiplier;
+
+    gameStats.novaCoinsBalance += amount;
+    gameStats.totalMined += amount;
+    gameStats.totalClicks++;
 
     render();
     playCoinSound();
     requestSave();
-}
-
-function checkItemsAvailability() {
-    for (const key in itemsDefinitions) {
-        const definition = GameData.items[key];
-        const item = items[key];
-
-        if (!item.available && 
-            gameStats.totalMined >= definition.requirement) {
-                item.available = true;
-        }
-    }
 }
 
 
@@ -315,7 +327,7 @@ function clickUpgrade() {
         gameStats.novaCoinsBalance -= upgrade.cost;
         gameStats.coinsPerClick += gameStats.clicksMultiplier;
 
-        upgrade.level += 1;
+        upgrade.level++;
         upgrade.cost = Math.floor(upgrade.cost * 1.32);
 
         render();
@@ -327,11 +339,10 @@ function autoMinerUpgrade() {
     const upgrade = upgrades.autoMiner;
 
     if (gameStats.novaCoinsBalance >= upgrade.cost) {
-
         gameStats.novaCoinsBalance -= upgrade.cost;
 
-        entities.autoMiner.amount += 1;
-        upgrade.level += 1;
+        entities.autoMiner.amount++;
+        upgrade.level++;
         upgrade.cost = Math.floor(upgrade.cost * 1.32);
 
         autoMine();
@@ -350,34 +361,32 @@ let intervalID = null;
 function autoMine() {
     const miner = entities.autoMiner;
 
-    if (intervalID !== null) {
-        clearInterval(intervalID);
-    }
+    if (intervalID !== null) clearInterval(intervalID);
     if (miner.amount <= 0) return;
 
     intervalID = setInterval(() => {
+        const coins = miner.amount * gameStats.autoMinerMultiplier;
 
-        const coinsPerTick = miner.amount;
-
-        gameStats.novaCoinsBalance += coinsPerTick;
-        gameStats.totalMined += coinsPerTick;
+        gameStats.novaCoinsBalance += coins;
+        gameStats.totalMined += coins;
 
         renderBalance();
+        updateShopButtonsState();
         requestSave();
-
     }, miner.speed);
 }
 
 
 /* =========================
-   UI / EVENTS
+   UI EVENTS
 ========================= */
 
 function closeShop(event) {
-    if (event === undefined || event.target === overlay) {
+    if (!event || event.target === overlay) {
         overlay.classList.remove("active");
     }
 }
+
 function toggleStatsTable() {
     statsTable.hidden = !statsTable.hidden;
     statsButton.textContent = statsTable.hidden ? "▲" : "▼";
@@ -385,9 +394,9 @@ function toggleStatsTable() {
 
 openShopBtn.addEventListener("click", () => {
     overlay.classList.add("active");
-    checkItemsAvailability();
     renderShop();
 });
+
 closeShopBtn.addEventListener("click", () => closeShop());
 overlay.addEventListener("click", (event) => closeShop(event));
 
