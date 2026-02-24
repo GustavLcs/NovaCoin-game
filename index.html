@@ -32,7 +32,7 @@
     </section>
 
     <!-- Shop -->
-    <section class="shop-card">
+    <section class="upgrades-card">
         <h2>🛒 Upgrades</h2>
 
         <div class="upgrade-item">
@@ -55,7 +55,7 @@
     
     <!-- Stats -->
     <section class="stats-card">
-        <h2>📊 Stats <button id="statsButton">⏷</button> </h2>
+        <h2>📊 Stats <button id="statsButton">▼</button> </h2>
         <div id="statsTable">
             <div class="stat-row">
                 <span>Coins Per Tap</span>
@@ -81,16 +81,40 @@
 
 <footer class="bottom-nav">
     <div class="nav-container">
-        <button class="nav-item">
+        <button id="openShopBtn" class="nav-item">
             <span>🛒</span>
-            Shop
+            <p>Shop</p>
         </button>
+
         <button class="nav-item">
             <span>🪽</span>
-            Rebirth
+            <p>Rebirth</p>
         </button>
     </div>
 </footer>
+ 
+<div id="overlay" class="overlay">
+    <div id="shopCard" class="shop-card">
+        <div class="shop-title">
+            <h2>High-Tech Shop <button id="closeShopBtn">❌</button></h2>
+            <p>Upgrade your devices!</p>
+        </div>
+
+        <div id="shopItemList">
+            <div class="shop-item">
+                <div class="item-description">
+                    <h4>Oops</h4>
+                    <p>
+                        You already have the best devices.
+                        Keep playing to unlock more upgrades!
+                    </p>
+                </div>
+                <button id="buyItemBtn">100 NC</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <script src="novaCoin.js"></script>
 </body>

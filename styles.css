@@ -111,7 +111,7 @@ body {
 
 /* ========== CARDS ========== */
 .stats-card,
-.shop-card {
+.upgrades-card {
     background: rgba(255, 255, 255, 0.06);
     padding: 18px;
     border-radius: 16px;
@@ -119,17 +119,21 @@ body {
     box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
+.stats-card {
+    margin-bottom: 80px;
+}
+
 #statsButton {
     background: none;
     border: none;
     color: white;
-    font-size: 20px;
+    font-size: 15px;
     margin-left: calc(100% - 100px);
     cursor: pointer;
 }
 
 .stats-card h2,
-.shop-card h2 {
+.upgrades-card h2 {
     margin-bottom: 12px;
     font-size: 18px;
 }
@@ -185,8 +189,11 @@ body {
 
 /* ========== BOTTOM NAV ========== */
 .bottom-nav {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(6px);
 }
 
 .nav-container {
@@ -200,8 +207,8 @@ body {
     background-color: rgba(0, 0, 0, 0.7);
     border: none;
     color: white;
-    margin: 5px 0;
-    padding: 5px 70px;
+    margin: 2px 0;
+    padding: 5px 15vw;
     border-radius: 50px;
     text-align: center;
     font-size: 12px;
@@ -214,7 +221,93 @@ body {
     font-size: 18px;
 }
 
-/* ========== DESKTOP UPGRADE ========== */
+/* Shop background overlay */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Upgrade Shop card */
+.shop-card {
+    background: #203a43;
+    width: 500px;
+    max-width: 85%;
+    height: 85%;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+    transform: translateY(100%);
+    transition: transform 0.5s ease;
+}
+
+.overlay.active .shop-card {
+    transform: translateY(-10vh);
+}
+
+.shop-title button {
+    background: none;
+    border: none;
+    font-size: 25px;
+    margin-left: calc(100% - 230px);
+}
+
+.shop-title button:hover {
+    cursor: pointer;
+}
+
+.shop-item {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 50% 50%;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.15);
+    margin: 15px 0 -2px;
+    padding: 10px 20px 20px;
+    border-radius: 15px;
+}
+
+.shop-item h4, p {
+    grid-column-start: 1;
+}
+
+.shop-item button {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    background-color: rgba(0, 128, 128, 0.25);
+    border: none;
+    border-radius: 15px;
+    color: white;
+    padding: 10px 5px;
+    max-width: 100%;
+    font-weight: 700;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.shop-item button:active {
+    transform: scale(0.95);
+}
+
+.shop-item button:hover {
+    cursor: pointer;
+    background-color: rgba(0, 128, 128, 0.35);
+}
+
+/* ========== DESKTOP ========== */
 @media (min-width: 768px) {
 
     .top-bar {
@@ -237,13 +330,9 @@ body {
     }
 
     .stats-card,
-    .shop-card {
+    .upgrades-card {
         width: 350px;
         margin: 0 10px;
-    }
-
-    .bottom-nav {
-        position: relative;
     }
 
     .nav-container {
