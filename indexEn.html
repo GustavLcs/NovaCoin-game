@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NovaCoin Clicker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="images/novaIcon.png">
+</head>
+<body>
+
+<header class="top-bar">
+    <container>
+        <h1 class="game-title">NovaCoin Clicker</h1>
+        <div class="balance-box">
+            <span class="balance-label">Balance</span>
+            <span id="coinBalance" class="balance-amount">0 NC</span>
+        </div>
+    </container>
+
+    <div class="ticker">
+        <span>NovaCoin Price: $0.0042 ▲ 3.2% | Market Cap: $12.4M | Volume: $842K</span>
+        <a href="indexBr.html"><i class="fa fa-language" style="font-size:30px; color:white"></i></a>
+    </div>
+</header>
+
+<main class="game-container">
+
+    <!-- Coin Section -->
+    <section class="click-section">
+        <button id="coinButton" class="coin-button"></button>
+        <p class="click-hint">Tap to mine NovaCoins</p>
+    </section>
+
+    <!-- Shop -->
+    <section class="upgrades-card">
+        <h2>Upgrades</h2>
+
+        <div class="upgrade-item">
+            <div>
+                <h3>Click Boost</h3>
+                <p>Increase coins per tap</p>
+            </div>
+            <button id="upgradeButton1" value="0" class="buy-btn">50 NC</button>
+        </div>
+
+        <div class="upgrade-item">
+            <div>
+                <h3>Auto Miner</h3>
+                <p>Generates coins automatically</p>
+            </div>
+            <button id="upgradeButton2" value="1" class="buy-btn">100 NC</button>
+        </div>
+
+    </section>
+    
+    <!-- Stats -->
+    <section class="stats-card">
+        <h2>Stats <button id="statsButton">▼</button> </h2>
+        <div id="statsTable">
+            <div class="stat-row">
+                <span>Coins Per Tap</span>
+                <span id="coinsPerClick">1</span>
+            </div>
+            <div class="stat-row">
+                <span>Auto Miners</span>
+                <span id="autoMiners">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Total Clicks</span>
+                <span id="totalClicks">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Total Mined</span>
+                <span id="totalMined">0</span>
+            </div>
+        </div>
+    </section>
+
+
+</main>
+
+<footer class="bottom-nav">
+    <div class="nav-container">
+        <button id="openShopBtn" class="nav-item">
+            <span>🛒</span>
+            <p>Shop</p>
+        </button>
+
+        <button class="nav-item">
+            <span>🪽</span>
+            <p>Rebirth</p>
+        </button>
+    </div>
+</footer>
+ 
+<div id="overlay" class="overlay">
+    <div id="shopCard" class="shop-card">
+        <div class="shop-title">
+            <h2>High-Tech Shop <button id="closeShopBtn">❌</button></h2>
+            <p>Upgrade your devices!</p>
+        </div>
+
+        <div id="shopItemList">
+            <div class="shop-item">
+                <div class="item-description">
+                    <h4>Oops</h4>
+                    <p>
+                        You already have the best devices.
+                        Keep playing to unlock more upgrades!
+                    </p>
+                </div>
+                <button id="buyItemBtn">100 NC</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="novaCoinEn.js"></script>
+</body>
+</html>

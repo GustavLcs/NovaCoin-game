@@ -23,6 +23,13 @@ body {
     backdrop-filter: blur(8px);
 }
 
+.fa-language {
+    cursor:pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
 .game-title {
     font-size: 22px;
     margin-bottom: 6px;
@@ -128,7 +135,7 @@ body {
     border: none;
     color: white;
     font-size: 15px;
-    margin-left: calc(100% - 100px);
+    margin-left: calc(100% - 60px);
     cursor: pointer;
 }
 
